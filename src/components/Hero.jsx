@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { animate, scrambleText, splitText, stagger } from 'animejs'
 import { profile } from '../data/profile.js'
 import Ornament from './Ornament.jsx'
+import Magnetic from './Magnetic.jsx'
 
 const year = new Date().getFullYear()
 const toRoman = (n) =>
@@ -18,6 +19,15 @@ export default function Hero() {
   const nameRef = useRef(null)
   const roleRef = useRef(null)
   const kickerRef = useRef(null)
+  // Помехи на имени: при наведении буквы на долю секунды дёргаются и двоятся, как на старой кассете
+  // (класс ставим напрямую: содержимое h1 уже разрезано anime.js на буквы, React его не трогает)
+  const glitch = () => {
+    const el = nameRef.current
+    if (!el || el.classList.contains('is-glitching')) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    el.classList.add('is-glitching')
+    setTimeout(() => el.classList.remove('is-glitching'), 650)
+  }
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -60,7 +70,9 @@ export default function Hero() {
 
       <h1
         ref={nameRef}
-        className="mt-6 font-display text-6xl leading-[1.05] text-bone text-glow sm:text-8xl md:text-9xl"
+        data-text={profile.name}
+        onPointerEnter={glitch}
+        className="glitch mt-6 font-display text-6xl leading-[1.05] text-bone text-glow sm:text-8xl md:text-9xl"
       >
         {profile.name}
       </h1>
@@ -86,6 +98,7 @@ export default function Hero() {
         transition={{ delay: 1.9, duration: 0.8 }}
         className="mt-10 flex flex-wrap justify-center gap-4"
       >
+        <Magnetic>
         <a
           href="#projects"
           className="group relative overflow-hidden border border-bone bg-bone px-7 py-3 font-caps tracking-[0.2em] text-ink transition hover:shadow-[0_0_40px_rgba(228,225,218,0.35)]"
@@ -93,12 +106,15 @@ export default function Hero() {
           <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-ink/15 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
           Смотреть проекты
         </a>
+        </Magnetic>
+        <Magnetic>
         <a
           href="#contacts"
           className="border border-bone/40 bg-ink/40 px-7 py-3 font-caps tracking-[0.2em] text-bone/85 backdrop-blur-sm transition hover:border-bone hover:text-bone"
         >
           Связаться
         </a>
+        </Magnetic>
       </motion.div>
 
       <motion.a

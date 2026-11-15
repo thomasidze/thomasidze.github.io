@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { motion, useScroll, useTransform } from 'motion/react'
+import { motion, useMotionValue, useScroll, useSpring, useTransform } from 'motion/react'
 import { profile } from '../data/profile.js'
 import { assetUrl } from '../assetUrl.js'
 
@@ -16,17 +16,20 @@ const normalize = (bg) => {
 export default function Background() {
   const scenes = normalize(profile.background)
   const { scrollYProgress } = useScroll()
+  const parallax = useMouseParallax()
 
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-ink">
-      <div className="film-flicker absolute inset-0">
+      {/* сцены слегка следуют за мышью — появляется глубина */}
+      <motion.div className="film-flicker absolute inset-0" style={parallax}>
         {scenes.map((scene, i) => (
           <Scene key={scene.src} scene={scene} index={i} total={scenes.length} progress={scrollYProgress} />
         ))}
-      </div>
+      </motion.div>
 
       {/* затемнение, чтобы текст читался */}
       <div className="absolute inset-0 bg-gradient-to-b from-ink/55 via-ink/45 to-ink/85" />
+      <Lightning />
       {/* дрейфующий туман */}
       <div className="fog fog-a absolute -inset-x-1/2 bottom-[-10%] h-2/3" />
       <div className="fog fog-b absolute -inset-x-1/2 bottom-[-20%] h-1/2" />
@@ -36,6 +39,68 @@ export default function Background() {
       <div className="grain absolute -inset-[50%] opacity-[0.09]" />
     </div>
   )
+}
+
+// Параллакс: фон смещается на ~1.2% ширины экрана вслед за мышью (только мышь, не тач)
+function useMouseParallax() {
+  const mx = useMotionValue(0)
+  const my = useMotionValue(0)
+  const x = useSpring(mx, { stiffness: 40, damping: 20 })
+  const y = useSpring(my, { stiffness: 40, damping: 20 })
+
+  useEffect(() => {
+    const fine = window.matchMedia('(pointer: fine)').matches
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!fine || reduce) return
+    const onMove = (e) => {
+      const k = window.innerWidth * 0.012
+      mx.set(-((e.clientX / window.innerWidth) * 2 - 1) * k)
+      my.set(-((e.clientY / window.innerHeight) * 2 - 1) * k * 0.6)
+    }
+    window.addEventListener('pointermove', onMove)
+    return () => window.removeEventListener('pointermove', onMove)
+  }, [mx, my])
+
+  return { x, y }
+}
+
+// Молния: раз в 20–40 секунд облака вспыхивают — одиночной или двойной вспышкой,
+// свет идёт из случайной точки в верхней части неба.
+function Lightning() {
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let timer = 0
+    let anim = null
+
+    const strike = () => {
+      const el = ref.current
+      if (!el) return
+      const x = 20 + Math.random() * 60
+      const y = 5 + Math.random() * 25
+      el.style.background = `radial-gradient(ellipse 70% 55% at ${x}% ${y}%, rgba(235,238,255,0.95), rgba(200,205,230,0.35) 45%, transparent 75%)`
+      const double = Math.random() < 0.55
+      const steps = double ? [0, 0.75, 0.1, 0.05, 0.9, 0.25, 0] : [0, 0.85, 0.2, 0.45, 0]
+      // встроенная анимация браузера (Web Animations API): идёт на видеокарте и не грузит JS
+      anim = el.animate(
+        steps.map((opacity) => ({ opacity })),
+        { duration: double ? 1100 : 800, easing: 'linear' },
+      )
+      schedule(20000 + Math.random() * 20000)
+    }
+    const schedule = (ms) => {
+      timer = setTimeout(strike, ms)
+    }
+    schedule(5000 + Math.random() * 3000) // первая — вскоре после загрузки
+
+    return () => {
+      clearTimeout(timer)
+      anim?.cancel()
+    }
+  }, [])
+
+  return <div ref={ref} className="absolute inset-0 opacity-0 mix-blend-screen" />
 }
 
 // Одна сцена. Каждая следующая лежит поверх предыдущей и проявляется на своём отрезке прокрутки.

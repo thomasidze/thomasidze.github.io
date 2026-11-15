@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { profile } from '../data/profile.js'
 import SectionTitle from './SectionTitle.jsx'
 import { Icon } from './Icons.jsx'
+import Magnetic from './Magnetic.jsx'
 
 export default function Contacts() {
   return (
@@ -69,9 +70,10 @@ function ContactRow({ contact }) {
         </span>
       </a>
       {isEmail && (
+        <Magnetic className="ml-2 inline-block">
         <button
           onClick={copy}
-          className="relative ml-2 min-w-28 border border-bone/15 px-3 py-1.5 font-mono text-xs uppercase tracking-widest text-ash transition hover:border-bone/50 hover:text-bone"
+          className="relative min-w-28 border border-bone/15 px-3 py-1.5 font-mono text-xs uppercase tracking-widest text-ash transition hover:border-bone/50 hover:text-bone"
         >
           <AnimatePresence mode="wait" initial={false}>
             <motion.span
@@ -85,6 +87,7 @@ function ContactRow({ contact }) {
             </motion.span>
           </AnimatePresence>
         </button>
+        </Magnetic>
       )}
     </div>
   )

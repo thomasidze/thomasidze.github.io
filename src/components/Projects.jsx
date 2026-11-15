@@ -4,6 +4,7 @@ import { projects } from '../data/profile.js'
 import SectionTitle from './SectionTitle.jsx'
 import { Icon } from './Icons.jsx'
 import { assetUrl } from '../assetUrl.js'
+import Magnetic from './Magnetic.jsx'
 
 const roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII']
 
@@ -63,6 +64,7 @@ function ProjectCard({ project, index }) {
     >
       <motion.div aria-hidden className="pointer-events-none absolute inset-0 z-10" style={{ background: spotlight }} />
       <Corners />
+      <span aria-hidden className="ember-border z-30" />
 
       <div className="relative aspect-[16/9] overflow-hidden border-b border-bone/10 bg-gradient-to-br from-bone/[0.06] via-ink to-ink">
         {project.image ? (
@@ -96,14 +98,18 @@ function ProjectCard({ project, index }) {
         </ul>
         <div className="relative z-20 mt-6 flex gap-5">
           {project.github && (
+            <Magnetic strength={0.4}>
             <a href={project.github} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 font-caps tracking-widest text-ash transition hover:text-ember">
               <Icon name="github" className="h-4 w-4" /> Код
             </a>
+            </Magnetic>
           )}
           {project.demo && (
+            <Magnetic strength={0.4}>
             <a href={project.demo} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 font-caps tracking-widest text-ash transition hover:text-ember">
               <Icon name="external" className="h-4 w-4" /> {project.demoLabel ?? 'Демо'}
             </a>
+            </Magnetic>
           )}
         </div>
       </div>

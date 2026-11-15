@@ -11,6 +11,7 @@
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_4-0c0c0e?logo=tailwindcss&logoColor=e4e1da)
 ![Motion](https://img.shields.io/badge/Motion-0c0c0e?logo=framer&logoColor=e4e1da)
 ![Anime.js](https://img.shields.io/badge/Anime.js_4-0c0c0e)
+![Lenis](https://img.shields.io/badge/Lenis-0c0c0e)
 
 <img src="docs/preview.jpg" alt="Первый экран сайта: готическое имя на фоне шпиля с крестом в облаках" width="900" />
 
@@ -45,6 +46,13 @@
 | «Пилюля» в меню и полоска прогресса | Motion `layoutId`, `useScroll` | `Nav.jsx` |
 | Искры по клику | canvas | `ClickSpark.jsx` |
 | Счётчики статистики GitHub | Motion `animate` | `GithubActivity.jsx` |
+| Заставка: разгорается крест, тьма расходится занавесом | Motion | `Intro.jsx` |
+| Молнии в облаках раз в 20–40 секунд | Web Animations API | `Background.jsx` |
+| Фон слегка следует за мышью (параллакс) | Motion springs | `Background.jsx` |
+| Плавная прокрутка с инерцией | [Lenis](https://lenis.darkroom.engineering) | `smoothScroll.js` |
+| Помехи на имени при наведении, как на VHS | CSS `clip-path` + `@keyframes` | `Hero.jsx`, `index.css` |
+| Магнитные кнопки и ссылки | Motion springs | `Magnetic.jsx` |
+| Тлеющий огонёк по краю карточки | CSS `@property` + `conic-gradient` | `Projects.jsx`, `index.css` |
 
 Идеи эффектов взяты из [React Bits](https://reactbits.dev), [Animata](https://animata.design), [Kokonut UI](https://kokonutui.com) и примеров [Motion](https://motion.dev/examples) и [Anime.js](https://animejs.com). Сами компоненты написаны под этот сайт. Если в системе включено «уменьшение движения», анимации отключаются.
 

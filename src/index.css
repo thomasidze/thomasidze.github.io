@@ -1,0 +1,136 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-ink: #050506;
+  --color-crypt: #0c0c0e;
+  --color-bone: #e4e1da;
+  --color-ash: #8e8b88;
+  --color-blood: #6e0f1b;
+  --color-ember: #b3202e;
+  --color-pewter: #8a867f;
+
+  --font-display: 'UnifrakturCook', 'Ruslan Display', serif;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-caps: 'Cormorant SC', 'Cormorant Garamond', serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    background: var(--color-ink);
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-ink);
+    color: var(--color-bone);
+    font-family: var(--font-serif);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--color-blood);
+    color: var(--color-bone);
+  }
+
+  :focus-visible {
+    outline: 1px solid var(--color-ember);
+    outline-offset: 4px;
+  }
+
+  /* Тонкий тёмный скроллбар */
+  html {
+    scrollbar-color: #3a3a3e transparent;
+    scrollbar-width: thin;
+  }
+}
+
+/* Зерно поверх всего фона */
+.grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1.2s steps(6) infinite;
+}
+
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -3%); }
+  60% { transform: translate(-2%, -1%); }
+  80% { transform: translate(3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Дрейфующий туман поверх фоновой сцены */
+.fog {
+  background:
+    radial-gradient(40% 60% at 25% 60%, rgba(200, 200, 205, 0.16), transparent 70%),
+    radial-gradient(35% 50% at 70% 70%, rgba(200, 200, 205, 0.12), transparent 70%),
+    radial-gradient(30% 45% at 95% 55%, rgba(200, 200, 205, 0.1), transparent 70%);
+  filter: blur(30px);
+}
+.fog-a { animation: fog-drift 60s linear infinite; }
+.fog-b { animation: fog-drift 90s linear infinite reverse; opacity: 0.7; }
+
+@keyframes fog-drift {
+  0% { transform: translateX(-12%); }
+  50% { transform: translateX(12%); }
+  100% { transform: translateX(-12%); }
+}
+
+/* Еле заметное мерцание, как у старой плёнки */
+.film-flicker {
+  animation: flicker 5s steps(1) infinite;
+}
+
+@keyframes flicker {
+  0%, 100% { filter: brightness(1); }
+  12% { filter: brightness(1.06); }
+  13% { filter: brightness(0.95); }
+  47% { filter: brightness(1.03); }
+  48% { filter: brightness(1); }
+  71% { filter: brightness(0.94); }
+  72% { filter: brightness(1.04); }
+}
+
+.text-glow {
+  text-shadow:
+    0 0 28px rgba(228, 225, 218, 0.35),
+    0 0 2px rgba(228, 225, 218, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain,
+  .fog,
+  .film-flicker {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Подсказки календаря GitHub в стиле сайта.
+   Библиотека рендерит подсказку в конец <body> без z-index, а контент сайта лежит в слое z-10 —
+   поэтому поднимаем её выше. Селектор с [data-color-scheme], чтобы перебить тему библиотеки. */
+.react-activity-calendar__tooltip.react-activity-calendar__tooltip,
+.react-activity-calendar__tooltip.react-activity-calendar__tooltip[data-color-scheme] {
+  z-index: 45;
+  background: #0c0c0e;
+  color: var(--color-bone);
+  border: 1px solid rgba(228, 225, 218, 0.25);
+  border-radius: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 0.35em 0.7em;
+  pointer-events: none;
+
+  .react-activity-calendar__tooltip-arrow {
+    fill: #0c0c0e;
+  }
+}

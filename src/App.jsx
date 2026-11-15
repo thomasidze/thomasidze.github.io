@@ -10,7 +10,6 @@ import Projects from './components/Projects.jsx'
 import GithubActivity from './components/GithubActivity.jsx'
 import Contacts from './components/Contacts.jsx'
 import Footer from './components/Footer.jsx'
-import { startSmoothScroll } from './smoothScroll.js'
 
 // Ссылка вида /#projects ведёт сразу к разделу — заставку тогда не показываем
 const initialHash = window.location.hash.slice(1)
@@ -22,10 +21,6 @@ export default function App() {
 
   const reveal = useCallback(() => setReady(true), [])
   const finish = useCallback(() => setIntro(false), [])
-
-  useEffect(() => {
-    startSmoothScroll()
-  }, [])
 
   // при открытии ссылки вида /#projects — докрутить до секции после рендера
   useEffect(() => {

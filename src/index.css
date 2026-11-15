@@ -20,10 +20,6 @@
     scroll-behavior: smooth;
     scroll-padding-top: 5rem;
   }
-  /* Когда включён Lenis, плавность даёт он — встроенная мешала бы */
-  html.lenis {
-    scroll-behavior: auto;
-  }
   html {
     background: var(--color-ink);
     color-scheme: dark;
@@ -163,8 +159,9 @@
   animation: glitch-a 0.65s steps(1) both;
 }
 .glitch.is-glitching::after {
-  opacity: 0.8;
-  color: #cfe3ff;
+  opacity: 0.85;
+  color: #ff3344;
+  text-shadow: 0 0 14px rgba(255, 40, 60, 0.55);
   animation: glitch-b 0.65s steps(1) both;
 }
 

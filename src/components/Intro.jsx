@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
-import { lockScroll } from '../smoothScroll.js'
 
 const SEEN_KEY = 'intro-seen'
+
+// Пока идёт заставка, страницу нельзя прокрутить
+const lockScroll = (locked) => {
+  document.documentElement.style.overflow = locked ? 'hidden' : ''
+}
 
 // Показывать ли заставку: один раз за сессию и не при «уменьшении движения»
 export function shouldShowIntro() {

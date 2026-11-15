@@ -4,7 +4,7 @@
 
 **Личный сайт-портфолио в стиле dark gothic: обо мне, проекты и активность на GitHub.**
 
-[**→ Открыть сайт**](https://thomasidze.github.io/Portfolio-Website/)
+[**→ Открыть сайт**](https://thomasidze.github.io/)
 
 ![React](https://img.shields.io/badge/React_19-0c0c0e?logo=react&logoColor=e4e1da)
 ![Vite](https://img.shields.io/badge/Vite_8-0c0c0e?logo=vite&logoColor=e4e1da)

@@ -119,7 +119,12 @@ function ProjectCard({ project, index }) {
 
 const statuses = {
   dev: { label: 'В разработке', dot: 'bg-ember', ring: 'border-ember/50', pulse: 'animate-ping' },
-  live: { label: 'Вышел · обновляется', dot: 'bg-bone', ring: 'border-bone/40', pulse: 'animate-pulse' },
+  live: {
+    label: 'Вышел · обновляется',
+    dot: 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]',
+    ring: 'border-emerald-400/40',
+    pulse: 'animate-pulse',
+  },
   done: { label: 'Завершён', dot: 'bg-bone/60', ring: 'border-bone/20', pulse: null },
 }
 

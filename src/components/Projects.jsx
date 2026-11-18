@@ -1,30 +1,143 @@
-import { useRef } from 'react'
-import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform } from 'motion/react'
+import { useRef, useState } from 'react'
+import { AnimatePresence, motion, useMotionTemplate, useMotionValue, useSpring, useTransform } from 'motion/react'
 import { projects } from '../data/profile.js'
 import SectionTitle from './SectionTitle.jsx'
 import { Icon } from './Icons.jsx'
 import { assetUrl } from '../assetUrl.js'
 import Magnetic from './Magnetic.jsx'
 
-const roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII']
+const roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI']
+const MAX_PINNED = 4
+
+// Закреплённые (pinned: true) всегда на главной, не больше четырёх.
+// Если ничего не закреплено — показываем первые четыре.
+const withIndex = projects.map((p, index) => ({ ...p, index }))
+const pinnedList = (withIndex.some((p) => p.pinned) ? withIndex.filter((p) => p.pinned) : withIndex).slice(
+  0,
+  MAX_PINNED,
+)
+const pinnedSet = new Set(pinnedList)
+// Полный список: сначала закреплённые, потом остальные — свежие сверху
+const allList = [
+  ...pinnedList,
+  ...withIndex.filter((p) => !pinnedSet.has(p)).sort((a, b) => String(b.year).localeCompare(String(a.year))),
+]
+const hiddenCount = allList.length - pinnedList.length
+
+const filters = [
+  { id: 'all', label: 'Все' },
+  { id: 'live', label: 'Вышли' },
+  { id: 'dev', label: 'В разработке' },
+  { id: 'done', label: 'Завершены' },
+]
 
 export default function Projects() {
+  const sectionRef = useRef(null)
+  const [expanded, setExpanded] = useState(false)
+  const [filter, setFilter] = useState('all')
+
+  const visible = expanded ? allList.filter((p) => filter === 'all' || p.status === filter) : pinnedList
+
+  const toggle = () => {
+    if (!expanded) return setExpanded(true)
+    // при сворачивании вернуться к началу раздела, если он уехал вверх.
+    // Прокручиваем после того, как список сжался, иначе сжатие сбивает прокрутку.
+    const wasAbove = sectionRef.current.getBoundingClientRect().top < 0
+    setFilter('all')
+    setExpanded(false)
+    if (wasAbove) {
+      setTimeout(() => sectionRef.current?.scrollIntoView({ behavior: 'smooth' }), 80)
+    }
+  }
+
   return (
-    <section id="projects" className="mx-auto max-w-6xl px-4 py-28 sm:px-6">
+    <section ref={sectionRef} id="projects" className="mx-auto max-w-6xl px-4 py-28 sm:px-6">
       <SectionTitle numeral="II" title="Проекты" subtitle="То, что я сделал и чем могу похвастаться" />
-      <div className="grid gap-6 md:grid-cols-2">
-        {projects.map((p, i) => (
+
+      {/* фильтр по статусу — только в раскрытом списке */}
+      <AnimatePresence initial={false}>
+        {expanded && (
           <motion.div
-            key={p.title}
-            initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
-            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.8, delay: (i % 2) * 0.12, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
           >
-            <ProjectCard project={p} index={i} />
+            <div className="mb-8 flex flex-wrap justify-center gap-2">
+              {filters.map((f) => {
+                const count = f.id === 'all' ? allList.length : allList.filter((p) => p.status === f.id).length
+                if (!count) return null
+                const active = filter === f.id
+                return (
+                  <button
+                    key={f.id}
+                    onClick={() => setFilter(f.id)}
+                    className={`relative border border-transparent bg-ink/50 px-4 py-1.5 font-caps tracking-[0.15em] backdrop-blur-sm transition-colors ${
+                      active ? 'text-bone' : 'text-bone/60 hover:text-bone'
+                    }`}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="project-filter"
+                        className="absolute inset-0 -z-10 border border-bone/30 bg-bone/[0.07]"
+                        transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                      />
+                    )}
+                    {f.label} <span className="font-mono text-xs text-ash">{count}</span>
+                  </button>
+                )
+              })}
+            </div>
           </motion.div>
-        ))}
-      </div>
+        )}
+      </AnimatePresence>
+
+      <motion.div layout className="grid gap-6 md:grid-cols-2">
+        <AnimatePresence mode="popLayout" initial={false}>
+          {visible.map((p, i) => (
+            <motion.div
+              key={p.title}
+              layout
+              initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
+              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, scale: 0.96, filter: 'blur(6px)', transition: { duration: 0.25 } }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.8, delay: (i % 2) * 0.12, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <ProjectCard project={p} index={p.index} />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+
+      {expanded && visible.length === 0 && (
+        <p className="py-10 text-center italic text-ash">Здесь пока пусто.</p>
+      )}
+
+      {/* кнопка появляется, только если есть незакреплённые проекты */}
+      {hiddenCount > 0 && (
+        <div className="mt-12 flex justify-center">
+          <Magnetic>
+            <button
+              onClick={toggle}
+              aria-expanded={expanded}
+              className="group inline-flex items-center gap-3 border border-bone/30 bg-ink/40 px-7 py-3 font-caps tracking-[0.2em] text-bone/85 backdrop-blur-sm transition hover:border-bone hover:text-bone"
+            >
+              {expanded ? 'Свернуть' : 'Показать все проекты'}
+              {!expanded && <span className="font-mono text-xs text-ash">+{hiddenCount}</span>}
+              <motion.span
+                aria-hidden
+                animate={{ rotate: expanded ? 180 : 0 }}
+                transition={{ duration: 0.4 }}
+                className="inline-block text-ember"
+              >
+                ▾
+              </motion.span>
+            </button>
+          </Magnetic>
+        </div>
+      )}
     </section>
   )
 }

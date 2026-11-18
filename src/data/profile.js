@@ -49,9 +49,11 @@ export const profile = {
 }
 
 // status: 'dev' — в разработке, 'live' — вышел и обновляется, 'done' — завершён. version — необязательная подпись (например 'v0.7').
+// pinned: true — проект закреплён и всегда виден на главной (до 4 штук). Остальные открываются кнопкой «Показать все».
 export const projects = [
   {
     title: 'White Noise',
+    pinned: true,
     year: '2026',
     status: 'live',
     version: 'v0.9.1',
@@ -65,6 +67,7 @@ export const projects = [
   },
   {
     title: 'Deep Dive',
+    pinned: true,
     year: '2026',
     status: 'live',
     description:
@@ -77,6 +80,7 @@ export const projects = [
   },
   {
     title: 'Avito Parser',
+    pinned: true,
     year: '2026',
     status: 'dev',
     description:
@@ -88,6 +92,7 @@ export const projects = [
   },
   {
     title: 'Народный детейлер',
+    pinned: true,
     year: '2026',
     status: 'done',
     description:
@@ -97,5 +102,18 @@ export const projects = [
     github: null,
     demo: 'https://narodny-detailer.pages.dev/',
     demoLabel: 'Открыть сайт',
+  },
+  {
+    title: 'Split the bill',
+    pinned: false,
+    year: '2026',
+    status: 'done',
+    description:
+      'Telegram Mini App, которое делит общие расходы внутри группового чата.',
+    tags: ['Python', 'aiogram', 'htmx', 'FastAPI'],
+    image: null,
+    github: 'https://github.com/thomasidze/split-the-bill',
+    demo: null,
+    demoLabel: 'GitHub',
   },
 ]
